@@ -45,7 +45,10 @@ def index():
     genre_names = list(genre_counts.index)
 
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+    # Top ten categories
+    top_category_count = df.iloc[:,4:].sum().sort_values(ascending=False)[1:11]
+    top_category_names = list(top_category_count.index)
+
     graphs = [
         {
             'data': [
@@ -64,8 +67,28 @@ def index():
                     'title': "Genre"
                 }
             }
+        },
+
+        {
+            'data': [
+                Bar(
+                    x=top_category_names,
+                    y=top_category_count
+                )
+            ],
+
+            'layout': {
+                'title': 'Top Ten Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
+                }
+            }
         }
     ]
+
 
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
