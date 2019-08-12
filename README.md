@@ -41,5 +41,9 @@ The project is divided into 3 folders: one for data and data processing; another
 # Results
 The final output of the project is an interactive web app that takes a message from the user as an input and then classifies it.
 
+### Screenshots 
+![Web app](https://github.com/oalotaik/disaster-response/blob/master/screenshot1.JPG)
+![Top 10 Categories](https://github.com/oalotaik/disaster-response/blob/master/screenshot2.JPG)
+![Top 20 Words](https://github.com/oalotaik/disaster-response/blob/master/screenshot3.JPG)
 # Acknowledgement
 Thanks to Udacity for providing guidance to complete the project and thanks to Figure-8 for providing the data
