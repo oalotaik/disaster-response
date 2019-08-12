@@ -10,20 +10,69 @@ from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
-
+from collections import Counter
+import numpy as np
+import nltk
+import re
+from nltk.corpus import stopwords
+nltk.download('stopwords')
 
 app = Flask(__name__)
 
+
 def tokenize(text):
-    tokens = word_tokenize(text)
+    '''
+    Tokenize and clean text.
+    Input:
+        text: message
+    Output:
+        clean: tokenized, cleaned text
+    '''
+    # Normalize
+    text = re.sub(r"[^a-zA-Z0-9]", ' ', text.lower())
+    # Tokenize
+    words = word_tokenize(text)
+    # Remove Stopwords
+    words = [w for w in words if w not in stopwords.words('english')]
+    # remove short words
+    words = [w for w in words if len(w) > 2]
+    # Lemmatize
     lemmatizer = WordNetLemmatizer()
+    clean = [lemmatizer.lemmatize(w, pos='n').strip() for w in words]
+    clean = [lemmatizer.lemmatize(w, pos='v').strip() for w in clean]
+    return clean
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
-    return clean_tokens
+def compute_word_counts(messages, load=True, filepath='../data/counts.npz'):
+    '''
+    input: (
+        messages: list or numpy array
+        load: Boolean value if load or run model
+        filepath: filepath to save or load data
+            )
+    Function computes the top 20 words in the dataset with counts of each term
+    output: (
+        top_words: list
+        top_counts: list
+            )
+    '''
+    if load:
+        # load arrays
+        data = np.load(filepath)
+        return list(data['top_words']), list(data['top_counts'])
+    else:
+        # get top words
+        counter = Counter()
+        for message in messages:
+            tokens = tokenize(message)
+            for token in tokens:
+                counter[token] += 1
+        # top 20 words
+        top = counter.most_common(20)
+        top_words = [word[0] for word in top]
+        top_counts = [count[1] for count in top]
+        # save arrays
+        np.savez(filepath, top_words=top_words, top_counts=top_counts)
+        return list(top_words), list(top_counts)
 
 # load data
 #engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -48,6 +97,12 @@ def index():
     # Top ten categories
     top_category_count = df.iloc[:,4:].sum().sort_values(ascending=False)[1:11]
     top_category_names = list(top_category_count.index)
+
+    # Top 20 word counts
+    word_counts_path = "C:/Users/Osama/Desktop/OneDrive/Online Education/Data_Scientist_Nanodegree/Project - 5 Disaster_Response/data/word_counts.npz"
+    word_counts = compute_word_counts(df['message'].tolist(), False, word_counts_path)
+    top_20_words = word_counts[0]
+    top_20_counts = word_counts[1]
 
     graphs = [
         {
@@ -86,7 +141,26 @@ def index():
                     'title': "Categories"
                 }
             }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_20_words,
+                    y=top_20_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 20 Word Counts',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Words"
+                }
+            }
         }
+
     ]
 
 
