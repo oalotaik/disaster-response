@@ -12,7 +12,7 @@ In order to run the codes in this project, the following libraries must be insta
 This project was done to complete the requirements for Udacity's Data Scientist Nanodegree. Using text data from Figure-8, a company specializing in data analytics and machine learning, the purpose was to classify messages that were created during a disaster into 36 categories to help in aid efforts.
 
 # Files
-The project is divided into 3 folders: one for data and data processing; another one is for building a machine learning pipeline; and the third is for the web app.
+The project is divided into 3 folders: one for data and data processing; another one is for building a machine learning pipeline; and the third is for the web app. There are also 3 screenshots for the final web app.
 
 ### Files in the Data Folder
 1. Messages data: disaster_messages.csv
